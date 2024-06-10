@@ -17,9 +17,11 @@ add_executable(my_websocket_project
     src/websocket_server.cpp
 )
 
+target_link_libraries(my_websocket_project Boost::system Boost::thread pthread)
+
 add_executable(websocket_test
     test/test_websocket.cpp
 )
 
 # 連結必要的庫 (Boost 庫)
-target_link_libraries(my_websocket_project Boost::system Boost::thread)
+target_link_libraries(websocket_test Boost::system Boost::thread pthread)
