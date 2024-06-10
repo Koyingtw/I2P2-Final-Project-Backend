@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 
 # 包含 websocket++ 的頭文件路徑
 include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(/opt/homebrew/Cellar/websocketpp/0.8.2/include)
+include_directories(/opt/homebrew/Cellar/boost/1.85.0/include)
 
 # 添加 Boost 庫的路徑
 find_package(Boost REQUIRED system thread)
@@ -13,6 +15,10 @@ find_package(Boost REQUIRED system thread)
 add_executable(my_websocket_project
     src/main.cpp
     src/websocket_server.cpp
+)
+
+add_executable(websocket_test
+    test/test_websocket.cpp
 )
 
 # 連結必要的庫 (Boost 庫)

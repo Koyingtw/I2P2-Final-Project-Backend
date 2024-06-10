@@ -5,14 +5,15 @@
             "includePath": [
                 "${default}",
                 "${workspaceFolder}/include",
-                "${workspaceFolder}/libs/websocketpp"
+                "/opt/homebrew/Cellar/websocketpp/0.8.2/include",
+                "/opt/homebrew/Cellar/boost/1.85.0/**"
             ],
             "defines": [],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
             "cStandard": "c17",
-            "intelliSenseMode": "macos-clang-arm64"
+            "intelliSenseMode": "macos-gcc-arm64"
         }
     ],
     "version": 4
