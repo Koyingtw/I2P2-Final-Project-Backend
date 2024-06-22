@@ -1,6 +1,8 @@
 #include "websocket_server.hpp"
 #include "constants.hpp"
 #include "game_queue.hpp"
+#include "game.hpp"
+#include "pve.hpp"
 #include <iostream>
 #include <string>
 
@@ -47,26 +49,36 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
         auto hdl1 = (game->user1->hdl);
         auto hdl2 = (game->user2->hdl);
         // read the message
-        std::string ret = game->operation(hdl, message);
+        std::string ret = game->operation(m_server, hdl, message);
         std::cout << "Return message: " << ret << std::endl;
         std::cout << "hdl: " << &hdl << std::endl;
         std::cout << "hdl1: " << &hdl1 << std::endl;
         std::cout << "hdl2: " << &hdl2 << std::endl;
         if (hdl1 == hdl)
             std::cout << "hdl1 and hdl are equal" << std::endl;
-        // if (!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1))
-        // if (!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl))
         if (hdl2 == hdl)
             std::cout << "hdl2 and hdl are equal" << std::endl;
-        //     std::cout << "hdl2 and hdl are equal" << std::endl;
-        m_server.send(hdl1, std::to_string(!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1)) + ret, websocketpp::frame::opcode::text);
-        m_server.send(hdl2, std::to_string(!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl)) + ret, websocketpp::frame::opcode::text);
-
+        
         if (ret == "Game Over") {
             m_game_queue.removeGame(hdl1);
             m_game_queue.removeGame(hdl2);
         }
     }
+    else if (message == "pve") {
+        m_server.send(hdl, "PVE Mode", websocketpp::frame::opcode::text);
+        m_game_queue.pve(m_server, hdl);
+    }
+    else if (message[0] == '2' && m_game_queue.isInPve(hdl)) {
+        Pve *PVE = m_game_queue.getPve(hdl);
+        std::cout << "PVE" << std::endl;
+        std::string ret = PVE->operation(m_server, hdl, message);
+
+        if (ret == "Game Over") {
+            m_game_queue.removePve(hdl);
+        }
+    }
+    else
+        m_server.send(hdl, "Invalid message", websocketpp::frame::opcode::text);
 
     m_server.send(hdl, "Message received", websocketpp::frame::opcode::text);
 }

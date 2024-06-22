@@ -36,7 +36,8 @@ public:
             std::cout << "Connection opened" << std::endl;
             // 發送初始消息
             send_message("Hello, server!");
-            send_message("in queue");
+            // send_message("in queue");
+            send_message("pve");
         });
 
         // 設置關閉處理器

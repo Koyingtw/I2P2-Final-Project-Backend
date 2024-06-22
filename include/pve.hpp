@@ -3,15 +3,17 @@
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 #include "user.hpp"
+#include "ai.hpp"
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
-class Game {
+class Pve {
     public:
-        Game();
-        Game(User *user1, User *user2);
+        Pve();
+        Pve(User *u1, AI *ai);
         std::string operation(server &m_server, websocketpp::connection_hdl &hdl, std::string input);
-        User *user1, *user2;
+        User *user1;
+        AI *ai;
 };
 
 void printMatrix(const std::vector<std::vector<char>>& matrix);

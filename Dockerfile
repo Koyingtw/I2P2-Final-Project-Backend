@@ -30,10 +30,11 @@ WORKDIR /app
 COPY . /app
 
 # 構建項目
+RUN rm -rf build
 RUN mkdir -p build && cd build && cmake .. && make
 
 # 暴露應用程序運行的端口
-EXPOSE 9002
+EXPOSE 9024
 
 # 設置容器啟動時運行的命令
 CMD ["./build/my_websocket_project"]

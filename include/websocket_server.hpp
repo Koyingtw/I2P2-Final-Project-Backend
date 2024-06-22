@@ -30,6 +30,6 @@ private:
 
     GameQueue m_game_queue;
     std::set<websocketpp::connection_hdl, std::owner_less<websocketpp::connection_hdl>> 
-        m_connections;
+        m_connections, m_in_pve;
     std::mutex m_connection_lock;
 };

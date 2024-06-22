@@ -1,5 +1,7 @@
 #include "game_queue.hpp"
 #include "game.hpp"
+#include "ai.hpp"
+#include "pve.hpp"
 
 GameQueue::GameQueue() {}
 
@@ -33,15 +35,44 @@ void GameQueue::push(server &m_server, websocketpp::connection_hdl &hdl) {
     }
 }
 
-bool GameQueue::isInGame(websocketpp::connection_hdl hdl) {
+void GameQueue::pve(server &m_server, websocketpp::connection_hdl &hdl) {
+    auto hdl1 = hdl;
+
+    m_server.send(hdl1, "Matched", websocketpp::frame::opcode::text);
+
+    User *user1 = new User;
+    AI *ai = new AI;
+    user1->hdl = hdl1;
+    Pve *game = new Pve(user1, ai);
+    pves[hdl1] = game;
+
+    in_game.insert(hdl1);
+}
+
+bool GameQueue::isInGame(websocketpp::connection_hdl &hdl) {
     return in_game.find(hdl) != in_game.end();
 }
 
-Game *GameQueue::getGame(websocketpp::connection_hdl hdl) {
+bool GameQueue::isInPve(websocketpp::connection_hdl &hdl) {
+    return in_game.find(hdl) != in_game.end();
+}
+
+Game *GameQueue::getGame(websocketpp::connection_hdl &hdl) {
     return games[hdl];
 }
 
-void GameQueue::removeGame(websocketpp::connection_hdl hdl) {
+Pve *GameQueue::getPve(websocketpp::connection_hdl &hdl) {
+    return pves[hdl];
+}
+
+void GameQueue::removeGame(websocketpp::connection_hdl &hdl) {
+    delete games[hdl];
     in_game.erase(hdl);
     games.erase(hdl);
+}
+
+void GameQueue::removePve(websocketpp::connection_hdl &hdl) {
+    delete pves[hdl];
+    in_game.erase(hdl);
+    pves.erase(hdl);
 }

@@ -3,6 +3,9 @@ project(my_websocket_project)
 
 set(CMAKE_CXX_STANDARD 11)
 
+# set flag with -g
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fsanitize=address")
+
 # 包含 websocket++ 的頭文件路徑
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(/opt/homebrew/Cellar/websocketpp/0.8.2/include)
@@ -18,6 +21,9 @@ add_executable(my_websocket_project
     src/game_queue.cpp
     src/game.cpp
     src/operators.cpp
+    src/ai.cpp
+    src/pve.cpp
+    src/matrix.cpp
 )
 
 target_link_libraries(my_websocket_project Boost::system Boost::thread pthread)
