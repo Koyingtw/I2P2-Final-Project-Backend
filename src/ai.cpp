@@ -5,6 +5,7 @@
 #include "ai.hpp"
 #include "constants.hpp"
 #include "game.hpp"
+#include "matrix.hpp"
 
 typedef std::vector<std::vector<char>> Matrix;
 

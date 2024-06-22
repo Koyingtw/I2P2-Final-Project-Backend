@@ -18,5 +18,7 @@ class AI {
     public:
         std::vector<std::vector<char>> block;
         std::vector<std::vector<char>> board;
+        std::deque<char> nextBlock;
         static std::string genAnswer(const Matrix& board, const Matrix& block);
+        int score = 0;
 };

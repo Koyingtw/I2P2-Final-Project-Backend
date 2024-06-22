@@ -77,6 +77,10 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
             m_game_queue.removePve(hdl);
         }
     }
+    else if (message[0] == '3' && m_game_queue.isInPve(hdl)) {
+        Pve *PVE = m_game_queue.getPve(hdl);
+        PVE->hold(m_server, hdl);
+    }
     else
         m_server.send(hdl, "Invalid message", websocketpp::frame::opcode::text);
 

@@ -84,9 +84,14 @@ private:
         while (running) {
             int status;
             std::cin >> status;
-            std::string user_block = std::to_string(status) + "XXXXXXXXXXXXXXXXXXXXXXXTXXXXXXXXTTTXXXXX\n";
-            std::cout << "User block: " << user_block << std::endl;
-            send_message(user_block);
+            if (status == 2) {
+                std::string user_block = std::to_string(status) + "XXXXXXXXXXXXXXXXXXXXXXXTXXXXXXXXTTTXXXXX\n";
+                std::cout << "User block: " << user_block << std::endl;
+                send_message(user_block);
+            }
+            else if (status == 3) {
+                send_message("3");
+            }
         }
     }
 

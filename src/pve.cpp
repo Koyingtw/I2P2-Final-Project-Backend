@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include "ai.hpp"
 #include "matrix.hpp"
+#include "user.hpp"
 
 
 Pve::Pve() {
@@ -17,6 +18,46 @@ Pve::Pve(User *u1, AI *ai) {
     this->ai->board.resize(BOARD_HEIGHT, std::vector<char>(WIDTH, 'X'));
     this->user1->block = stringToMatrix(generateBlock());
     this->ai->block = stringToMatrix(generateBlock());
+
+    for (int i = 0; i < 3; i++) {
+        char next = generateBlockID();
+        this->user1->nextBlock.push_back(next);
+        next = generateBlockID();
+        this->ai->nextBlock.push_back(next);
+    }
+
+    this->user1->holdBlock = 'X';
+}
+
+void Pve::hold(server &m_server, websocketpp::connection_hdl &hdl) {
+    User *user = user1;
+    if (user->holdBlock == 'X') {
+        user->holdBlock = transToBlockID(user->block);
+        user->block = stringToMatrix(generateBlockString(user->nextBlock[0]));
+        user->nextBlock.pop_front();
+        user->nextBlock.push_back(generateBlockID());
+    } else {
+        char tmp = user->holdBlock;
+        user->holdBlock = transToBlockID(user->block);
+        user->block = stringToMatrix(generateBlockString(tmp));
+    }
+
+    std::string ret = "my-block\n" + matrixToString(user->block);
+
+
+    ret += "my-hold\n";
+    ret += user->holdBlock;
+    ret += '\n';
+
+    ret += "my-next\n";
+    for (int i = 0; i < 3; i++) {
+        ret += user->nextBlock[i];
+    }
+    ret += '\n';
+
+    ret += "my-score " + std::to_string(user->score) + '\n';
+    ret += "ai-score " + std::to_string(ai->score) + '\n';
+    m_server.send(user1->hdl, ret, websocketpp::frame::opcode::text);
 }
 
 std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, std::string input) {
@@ -43,15 +84,20 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
     }
 
     // 將方塊放置在盤面上
-    placeBlock(user->board, user->block, dropRow, 0);
+    int clearRows = placeBlock(user->board, user->block, dropRow, 0);
+    user->score += clearRows * 100;
+    ai->score -= clearRows * 100;
 
     // 印出盤面
     std::cout << "user: " << user << std::endl;
     // printMatrix(user->board);
 
-    std::string ret = generateBlock();
+    user->block = stringToMatrix(generateBlockString(user->nextBlock[0]));
+    user->nextBlock.pop_front();
+    user->nextBlock.push_back(generateBlockID());
+    std::string ret = "my-block\n" + matrixToString(user->block);
 
-    ret += '\n';
+    ret += "my-board\n";
 
     for (int i = 0; i < BOARD_HEIGHT; ++i) {
         for (int j = 0; j < WIDTH; ++j) {
@@ -59,7 +105,20 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
         }
         ret += '\n';
     }
-    m_server.send(user1->hdl, std::to_string(2) + ret, websocketpp::frame::opcode::text);
+
+    ret += "my-hold\n";
+    ret += user->holdBlock;
+    ret += '\n';
+
+    ret += "my-next\n";
+    for (int i = 0; i < 3; i++) {
+        ret += user->nextBlock[i];
+    }
+    ret += '\n';
+
+    ret += "my-score " + std::to_string(user->score) + '\n';
+    ret += "ai-score " + std::to_string(ai->score) + '\n';
+    m_server.send(user1->hdl, ret, websocketpp::frame::opcode::text);
 
     // AI
 
@@ -87,17 +146,37 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
 
 
     // 將方塊放置在盤面上
-    placeBlock(ai->board, ai->block, dropRow, 0);
+    clearRows = placeBlock(ai->board, ai->block, dropRow, 0);
+    ai->score += clearRows * 100;
+    user1->score -= clearRows * 100;
 
-    std::string retAI = "0";
+
+
+    std::string retAI = "ai-block\n";
+
+    retAI += generateBlockString(ai->nextBlock[0]);
+    ai->block = stringToMatrix(generateBlockString(ai->nextBlock[0]));
+    ai->nextBlock.pop_front();
+    ai->nextBlock.push_back(generateBlockID());
+
+    retAI += "ai-board\n";
     for (int i = 0; i < BOARD_HEIGHT; ++i) {
         for (int j = 0; j < WIDTH; ++j) {
             retAI += ai->board[i][j];
         }
         retAI += '\n';
     }
+
+    retAI += "ai-next\n";
+    for (int i = 0; i < 3; i++) {
+        retAI += ai->nextBlock[i];
+    }
+    retAI += '\n';
+
+    retAI += "my-score " + std::to_string(user->score) + '\n';
+    retAI += "ai-score " + std::to_string(ai->score) + '\n';
+
     m_server.send(user1->hdl, retAI, websocketpp::frame::opcode::text);
-    ai->block = stringToMatrix(generateBlock());
 
     return ret;
 }

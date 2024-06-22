@@ -12,10 +12,7 @@ class Pve {
         Pve();
         Pve(User *u1, AI *ai);
         std::string operation(server &m_server, websocketpp::connection_hdl &hdl, std::string input);
+        void hold(server &m_server, websocketpp::connection_hdl &hdl);
         User *user1;
         AI *ai;
 };
-
-void printMatrix(const std::vector<std::vector<char>>& matrix);
-bool canPlaceBlock(const std::vector<std::vector<char>>& board, const std::vector<std::vector<char>>& block, int startRow, int startCol);
-void placeBlock(std::vector<std::vector<char>>& board, const std::vector<std::vector<char>>& block, int startRow, int startCol);

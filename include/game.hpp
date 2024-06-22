@@ -14,6 +14,6 @@ class Game {
         User *user1, *user2;
 };
 
-void printMatrix(const std::vector<std::vector<char>>& matrix);
-bool canPlaceBlock(const std::vector<std::vector<char>>& board, const std::vector<std::vector<char>>& block, int startRow, int startCol);
-void placeBlock(std::vector<std::vector<char>>& board, const std::vector<std::vector<char>>& block, int startRow, int startCol);
+// void printMatrix(const std::vector<std::vector<char>>& matrix);
+// bool canPlaceBlock(const std::vector<std::vector<char>>& board, const std::vector<std::vector<char>>& block, int startRow, int startCol);
+// void placeBlock(std::vector<std::vector<char>>& board, const std::vector<std::vector<char>>& block, int startRow, int startCol);
