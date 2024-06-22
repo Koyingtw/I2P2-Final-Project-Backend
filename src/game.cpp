@@ -2,6 +2,7 @@
 #include "constants.hpp"
 #include <iostream>
 
+
 Game::Game() {
     user1->board.resize(BOARD_HEIGHT, std::vector<char>(WIDTH, 'X'));
     user2->board.resize(BOARD_HEIGHT, std::vector<char>(WIDTH, 'X'));
@@ -52,6 +53,12 @@ void placeBlock(std::vector<std::vector<char>>& board, const std::vector<std::ve
     }
 }
 
+
+std::string generateBlock() {
+    const std::string blocks[] = {I, L, J, O, S, T, Z};
+    return blocks[rand() % 7];
+}
+
 std::string Game::operation(websocketpp::connection_hdl &hdl, std::string input) {
     User *user = (!(user1->hdl).owner_before(hdl) && !hdl.owner_before(user1->hdl)) ? user1 : user2;
     std::cout << "user: " << user << std::endl;
@@ -77,7 +84,10 @@ std::string Game::operation(websocketpp::connection_hdl &hdl, std::string input)
     // 印出盤面
     // printMatrix(user.board);
 
-    std::string ret;
+    std::string ret = generateBlock();
+
+    ret += '\n';
+
     for (int i = 0; i < BOARD_HEIGHT; ++i) {
         for (int j = 0; j < WIDTH; ++j) {
             ret += user1->board[i][j];
@@ -92,8 +102,6 @@ std::string Game::operation(websocketpp::connection_hdl &hdl, std::string input)
         }
         ret += '\n';
     }
-
-    std::cout << ret << std::endl;
 
     return ret;
 }
