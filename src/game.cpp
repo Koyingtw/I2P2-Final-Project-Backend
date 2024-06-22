@@ -78,6 +78,10 @@ std::string Game::operation(websocketpp::connection_hdl &hdl, std::string input)
         dropRow = i;
     }
 
+    if (dropRow == 0) {
+        return "Game Over";
+    }
+
     // 將方塊放置在盤面上
     placeBlock(user->board, user->block, dropRow, 0);
 

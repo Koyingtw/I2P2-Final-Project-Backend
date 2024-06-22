@@ -40,3 +40,8 @@ bool GameQueue::isInGame(websocketpp::connection_hdl hdl) {
 Game *GameQueue::getGame(websocketpp::connection_hdl hdl) {
     return games[hdl];
 }
+
+void GameQueue::removeGame(websocketpp::connection_hdl hdl) {
+    in_game.erase(hdl);
+    games.erase(hdl);
+}

@@ -21,4 +21,5 @@ class GameQueue {
         void push(server &m_server, websocketpp::connection_hdl &hdl);
         bool isInGame(websocketpp::connection_hdl hdl);
         Game *getGame(websocketpp::connection_hdl hdl);
+        void removeGame(websocketpp::connection_hdl hdl);
 };

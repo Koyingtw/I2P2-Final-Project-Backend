@@ -61,6 +61,11 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
         //     std::cout << "hdl2 and hdl are equal" << std::endl;
         m_server.send(hdl1, std::to_string(!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1)) + ret, websocketpp::frame::opcode::text);
         m_server.send(hdl2, std::to_string(!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl)) + ret, websocketpp::frame::opcode::text);
+
+        if (ret == "Game Over") {
+            m_game_queue.removeGame(hdl1);
+            m_game_queue.removeGame(hdl2);
+        }
     }
 
     m_server.send(hdl, "Message received", websocketpp::frame::opcode::text);
