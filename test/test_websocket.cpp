@@ -3,12 +3,15 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include <atomic>
+#include "constants.hpp"
 
 typedef websocketpp::client<websocketpp::config::asio_client> client;
 
 class WebSocketClient {
 public:
-    WebSocketClient() {
+    WebSocketClient() : running(true) {
         // 初始化 Asio
         m_client.init_asio();
         m_client.set_max_message_size(65536);
@@ -31,65 +34,74 @@ public:
         con->set_open_handler([this](websocketpp::connection_hdl hdl) {
             m_hdl = hdl;
             std::cout << "Connection opened" << std::endl;
-            // 發送消息
-            m_client.send(hdl, "Hello, server!", websocketpp::frame::opcode::text);
-            m_client.send(hdl, "in queue", websocketpp::frame::opcode::text);
-            m_client.send(hdl, "test", websocketpp::frame::opcode::text);
+            // 發送初始消息
+            send_message("Hello, server!");
+            send_message("in queue");
         });
 
         // 設置關閉處理器
-        con->set_close_handler([](websocketpp::connection_hdl hdl) {
+        con->set_close_handler([this](websocketpp::connection_hdl hdl) {
             std::cout << "Connection closed" << std::endl;
+            running = false;
         });
 
         // 設置失敗處理器
-        con->set_fail_handler([](websocketpp::connection_hdl hdl) {
+        con->set_fail_handler([this](websocketpp::connection_hdl hdl) {
             std::cout << "Connection failed" << std::endl;
+            running = false;
         });
 
         // 設置連接
         m_client.connect(con);
 
-        // 啟動 Asio 事件循環
-        m_client.run();
+        // 在另一個線程中運行 Asio 事件循環
+        std::thread asio_thread([this]() {
+            m_client.run();
+        });
+
+        // 在主線程中處理用戶輸入
+        handle_user_input();
+
+        // 等待 Asio 事件循環結束
+        asio_thread.join();
     }
 
 private:
-    void on_message(websocketpp::connection_hdl hdl, client::message_ptr msg) {
-        std::string message = msg->get_payload();
-        std::cout << "Received message: " << msg->get_payload() << std::endl;
-        // m_client.send(m_hdl, "test", websocketpp::frame::opcode::text);
+    void send_message(const std::string& message) {
+        try {
+            websocketpp::lib::error_code ec;
+            m_client.send(m_hdl, message, websocketpp::frame::opcode::text, ec);
+            if (ec) {
+                std::cerr << "Error sending message: " << ec.message() << std::endl;
+            }
+        } catch (const websocketpp::exception& e) {
+            std::cerr << "Exception caught while sending message: " << e.what() << std::endl;
+        }
+    }
 
-        if (message == "Matched" || message[0] == '1' || message[0] == '0') {
-            std::cout << "Matched with another player" << std::endl;
-
+    void handle_user_input() {
+        while (running) {
             int status;
             std::cin >> status;
-            // input user block
-            std::string user_block;
-            // std::cin >> user_block;
-            user_block = std::to_string(status) + "XXXXXXXXXXXXXXXXXXXXXXXTXXXXXXXXTTTXXXXX\n";
-            
+            std::string user_block = std::to_string(status) + "XXXXXXXXXXXXXXXXXXXXXXXTXXXXXXXXTTTXXXXX\n";
             std::cout << "User block: " << user_block << std::endl;
-            try {
-                websocketpp::lib::error_code ec;
-                m_client.send(m_hdl, user_block, websocketpp::frame::opcode::text, ec);
-                if (ec) {
-                    std::cerr << "Error sending message: " << ec.message() << std::endl;
-                }
-            } catch (const websocketpp::exception& e) {
-                std::cerr << "Exception caught while sending message: " << e.what() << std::endl;
-            }
+            send_message(user_block);
         }
-        // 可以根據需要處理更多的消息
+    }
+
+    void on_message(websocketpp::connection_hdl hdl, client::message_ptr msg) {
+        std::string message = msg->get_payload();
+        std::cout << "Received message: " << message << std::endl;
     }
 
     client m_client;
     websocketpp::connection_hdl m_hdl;
+    std::atomic<bool> running;
 };
 
 int main() {
     WebSocketClient ws_client;
-    ws_client.run("ws://localhost:9002");
+    std::string uri = "ws://localhost:" + std::to_string(PORT);
+    ws_client.run(uri);
     return 0;
 }

@@ -6,15 +6,15 @@ class User {
     public:
         std::vector<std::vector<char>> block;
         std::vector<std::vector<char>> board;
-        websocketpp::connection_hdl *hdl;
+        websocketpp::connection_hdl hdl;
 };
 
 class Game {
     public:
         Game();
-        Game(User user1, User user2);
+        Game(User *user1, User *user2);
         std::string operation(websocketpp::connection_hdl &hdl, std::string input);
-        User user1, user2;
+        User *user1, *user2;
 };
 
 void printMatrix(const std::vector<std::vector<char>>& matrix);

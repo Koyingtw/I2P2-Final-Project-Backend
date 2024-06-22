@@ -15,10 +15,10 @@ class GameQueue {
     private:
         std::queue<websocketpp::connection_hdl> user_queue;
         std::set<websocketpp::connection_hdl, connection_hdl_comparator> in_game;
-        std::map<websocketpp::connection_hdl, Game, connection_hdl_comparator> games;
+        std::map<websocketpp::connection_hdl, Game*, connection_hdl_comparator> games;
     public:
         GameQueue();
         void push(server &m_server, websocketpp::connection_hdl &hdl);
         bool isInGame(websocketpp::connection_hdl hdl);
-        Game getGame(websocketpp::connection_hdl hdl);
+        Game *getGame(websocketpp::connection_hdl hdl);
 };

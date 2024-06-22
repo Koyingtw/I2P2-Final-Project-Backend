@@ -18,13 +18,15 @@ void GameQueue::push(server &m_server, websocketpp::connection_hdl &hdl) {
         m_server.send(hdl2, "Matched", websocketpp::frame::opcode::text);
 
         // 開始遊戲
-        User user1;
-        user1.hdl = &hdl1;
-        User user2;
-        user2.hdl = &hdl2;
-        Game game(user1, user2);
+        User *user1 = new User;
+        User *user2 = new User;
+        user1->hdl = hdl1;
+        user2->hdl = hdl2;
+        // return;
+        Game *game = new Game(user1, user2);
         games[hdl1] = game;
         games[hdl2] = game;
+
 
         in_game.insert(hdl1);
         in_game.insert(hdl2);
@@ -35,6 +37,6 @@ bool GameQueue::isInGame(websocketpp::connection_hdl hdl) {
     return in_game.find(hdl) != in_game.end();
 }
 
-Game GameQueue::getGame(websocketpp::connection_hdl hdl) {
+Game *GameQueue::getGame(websocketpp::connection_hdl hdl) {
     return games[hdl];
 }

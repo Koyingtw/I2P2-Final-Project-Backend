@@ -43,19 +43,22 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
         m_game_queue.push(m_server, hdl);
     }
     else if (message[0] == '1' && m_game_queue.isInGame(hdl)) {
-        Game game = m_game_queue.getGame(hdl);
-        auto hdl1 = (*game.user1.hdl);
-        auto hdl2 = (*game.user2.hdl);
+        Game *game = m_game_queue.getGame(hdl);
+        auto hdl1 = (game->user1->hdl);
+        auto hdl2 = (game->user2->hdl);
         // read the message
-        std::string ret = game.operation(hdl, message);
+        std::string ret = game->operation(hdl, message);
         std::cout << "Return message: " << ret << std::endl;
         std::cout << "hdl: " << &hdl << std::endl;
         std::cout << "hdl1: " << &hdl1 << std::endl;
         std::cout << "hdl2: " << &hdl2 << std::endl;
-        if (!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1))
+        if (hdl1 == hdl)
             std::cout << "hdl1 and hdl are equal" << std::endl;
-        if (!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl))
+        // if (!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1))
+        // if (!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl))
+        if (hdl2 == hdl)
             std::cout << "hdl2 and hdl are equal" << std::endl;
+        //     std::cout << "hdl2 and hdl are equal" << std::endl;
         m_server.send(hdl1, std::to_string(!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1)) + ret, websocketpp::frame::opcode::text);
         m_server.send(hdl2, std::to_string(!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl)) + ret, websocketpp::frame::opcode::text);
     }

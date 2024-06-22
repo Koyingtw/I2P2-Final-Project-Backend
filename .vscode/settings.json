@@ -76,6 +76,7 @@
         "__tree": "cpp",
         "map": "cpp",
         "semaphore": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "future": "cpp"
     }
 }

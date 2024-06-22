@@ -17,6 +17,7 @@ add_executable(my_websocket_project
     src/websocket_server.cpp
     src/game_queue.cpp
     src/game.cpp
+    src/operators.cpp
 )
 
 target_link_libraries(my_websocket_project Boost::system Boost::thread pthread)
