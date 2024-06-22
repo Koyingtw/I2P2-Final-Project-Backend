@@ -11,6 +11,7 @@ public:
     WebSocketClient() {
         // 初始化 Asio
         m_client.init_asio();
+        m_client.set_max_message_size(65536);
 
         // 設置消息處理器
         m_client.set_message_handler(bind(&WebSocketClient::on_message, this, std::placeholders::_1, std::placeholders::_2));
@@ -32,6 +33,8 @@ public:
             std::cout << "Connection opened" << std::endl;
             // 發送消息
             m_client.send(hdl, "Hello, server!", websocketpp::frame::opcode::text);
+            m_client.send(hdl, "in queue", websocketpp::frame::opcode::text);
+            m_client.send(hdl, "test", websocketpp::frame::opcode::text);
         });
 
         // 設置關閉處理器
@@ -53,7 +56,31 @@ public:
 
 private:
     void on_message(websocketpp::connection_hdl hdl, client::message_ptr msg) {
+        std::string message = msg->get_payload();
         std::cout << "Received message: " << msg->get_payload() << std::endl;
+        // m_client.send(m_hdl, "test", websocketpp::frame::opcode::text);
+
+        if (message == "Matched" || message[0] == '1' || message[0] == '0') {
+            std::cout << "Matched with another player" << std::endl;
+
+            int status;
+            std::cin >> status;
+            // input user block
+            std::string user_block;
+            // std::cin >> user_block;
+            user_block = std::to_string(status) + "XXXXXXXXXXXXXXXXXXXXXXXTXXXXXXXXTTTXXXXX\n";
+            
+            std::cout << "User block: " << user_block << std::endl;
+            try {
+                websocketpp::lib::error_code ec;
+                m_client.send(m_hdl, user_block, websocketpp::frame::opcode::text, ec);
+                if (ec) {
+                    std::cerr << "Error sending message: " << ec.message() << std::endl;
+                }
+            } catch (const websocketpp::exception& e) {
+                std::cerr << "Exception caught while sending message: " << e.what() << std::endl;
+            }
+        }
         // 可以根據需要處理更多的消息
     }
 

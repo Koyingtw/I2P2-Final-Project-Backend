@@ -70,6 +70,12 @@
         "format": "cpp",
         "stop_token": "cpp",
         "text_encoding": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "__hash_table": "cpp",
+        "__node_handle": "cpp",
+        "__tree": "cpp",
+        "map": "cpp",
+        "semaphore": "cpp",
+        "set": "cpp"
     }
 }

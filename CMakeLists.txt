@@ -15,6 +15,8 @@ find_package(Boost REQUIRED system thread)
 add_executable(my_websocket_project
     src/main.cpp
     src/websocket_server.cpp
+    src/game_queue.cpp
+    src/game.cpp
 )
 
 target_link_libraries(my_websocket_project Boost::system Boost::thread pthread)

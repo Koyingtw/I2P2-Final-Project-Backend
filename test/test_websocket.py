@@ -2,7 +2,7 @@ import asyncio
 import websockets
 
 async def test_websocket():
-    uri = "ws://localhost:9002"  # 伺服器的 URI
+    uri = "ws://koying.asuscomm.com:9002"  # 伺服器的 URI
     async with websockets.connect(uri) as websocket:
         # 發送多條消息給伺服器
         for i in range(5):

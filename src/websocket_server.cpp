@@ -1,8 +1,12 @@
 #include "websocket_server.hpp"
 #include "constants.hpp"
+#include "game_queue.hpp"
 #include <iostream>
+#include <string>
 
-WebSocketServer::WebSocketServer() {
+WebSocketServer::WebSocketServer(GameQueue &game_queue) {
+    m_game_queue = game_queue;
+    m_server.set_max_message_size(65536);
     m_server.init_asio();
     m_server.set_open_handler(bind(&WebSocketServer::on_open, this, std::placeholders::_1));
     m_server.set_close_handler(bind(&WebSocketServer::on_close, this, std::placeholders::_1));
@@ -21,7 +25,7 @@ void WebSocketServer::on_open(websocketpp::connection_hdl hdl) {
     std::cout << "Connection opened, total connections: " << m_connections.size() << std::endl;
 
     // 創建定時器並開始週期性地發送資料
-    send_periodic_data(hdl);
+    // send_periodic_data(hdl);
 }
 
 void WebSocketServer::on_close(websocketpp::connection_hdl hdl) {
@@ -31,7 +35,31 @@ void WebSocketServer::on_close(websocketpp::connection_hdl hdl) {
 }
 
 void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::message_ptr msg) {
-    std::cout << "Received message: " << msg->get_payload() << std::endl;
+    std::string message = msg->get_payload();
+    std::cout << "Received message: " << message << std::endl;
+
+    if (message == "in queue") {
+        m_server.send(hdl, "You are in queue", websocketpp::frame::opcode::text);
+        m_game_queue.push(m_server, hdl);
+    }
+    else if (message[0] == '1' && m_game_queue.isInGame(hdl)) {
+        Game game = m_game_queue.getGame(hdl);
+        auto hdl1 = (*game.user1.hdl);
+        auto hdl2 = (*game.user2.hdl);
+        // read the message
+        std::string ret = game.operation(hdl, message);
+        std::cout << "Return message: " << ret << std::endl;
+        std::cout << "hdl: " << &hdl << std::endl;
+        std::cout << "hdl1: " << &hdl1 << std::endl;
+        std::cout << "hdl2: " << &hdl2 << std::endl;
+        if (!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1))
+            std::cout << "hdl1 and hdl are equal" << std::endl;
+        if (!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl))
+            std::cout << "hdl2 and hdl are equal" << std::endl;
+        m_server.send(hdl1, std::to_string(!hdl1.owner_before(hdl) && !hdl.owner_before(hdl1)) + ret, websocketpp::frame::opcode::text);
+        m_server.send(hdl2, std::to_string(!hdl.owner_before(hdl2) && !hdl2.owner_before(hdl)) + ret, websocketpp::frame::opcode::text);
+    }
+
     m_server.send(hdl, "Message received", websocketpp::frame::opcode::text);
 }
 

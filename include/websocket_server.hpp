@@ -8,14 +8,18 @@
 #include <iostream>
 #include <chrono>
 #include <memory>
+#include "game_queue.hpp"
+#include "operators.hpp"
 
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
+
 class WebSocketServer {
 public:
-    WebSocketServer();
+    WebSocketServer(GameQueue &game_queue);
     void run(uint16_t port);
+    server m_server;
 
 private:
     void on_open(websocketpp::connection_hdl hdl);
@@ -24,7 +28,8 @@ private:
     void send_periodic_data(websocketpp::connection_hdl hdl);
     
 
-    server m_server;
-    std::set<websocketpp::connection_hdl, std::owner_less<websocketpp::connection_hdl>> m_connections;
+    GameQueue m_game_queue;
+    std::set<websocketpp::connection_hdl, std::owner_less<websocketpp::connection_hdl>> 
+        m_connections;
     std::mutex m_connection_lock;
 };
