@@ -1,6 +1,6 @@
 #pragma once
 
-const int PORT = 9029;
+const int PORT = 9031;
 const double TICK_RATE = 60.0f;
 const double TICK_TIME = 1.0f / TICK_RATE;
 const int BLOCK_HEIGHT = 4;

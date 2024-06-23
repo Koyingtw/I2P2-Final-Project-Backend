@@ -155,13 +155,13 @@ Pve *GameQueue::getPve(websocketpp::connection_hdl &hdl) {
 }
 
 void GameQueue::removeGame(websocketpp::connection_hdl &hdl) {
-    delete games[hdl];
     in_game.erase(hdl);
     games.erase(hdl);
+    // delete games[hdl];
 }
 
 void GameQueue::removePve(websocketpp::connection_hdl &hdl) {
-    delete pves[hdl];
     in_game.erase(hdl);
     pves.erase(hdl);
+    // delete pves[hdl];
 }
