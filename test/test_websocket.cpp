@@ -36,8 +36,8 @@ public:
             std::cout << "Connection opened" << std::endl;
             // 發送初始消息
             send_message("Hello, server!");
-            // send_message("in queue");
-            send_message("pve");
+            send_message("pvp");
+            // send_message("pve");
         });
 
         // 設置關閉處理器
@@ -84,7 +84,7 @@ private:
         while (running) {
             int status;
             std::cin >> status;
-            if (status == 2) {
+            if (status == 2 || status == 1) {
                 std::string user_block = std::to_string(status) + "XXXXXXXXXXXXXXXXXXXXXXXTXXXXXXXXTTTXXXXX\n";
                 std::cout << "User block: " << user_block << std::endl;
                 send_message(user_block);

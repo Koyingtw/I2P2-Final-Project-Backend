@@ -10,6 +10,7 @@ class Game {
     public:
         Game();
         Game(User *user1, User *user2);
+        void hold(server &m_server, websocketpp::connection_hdl &hdl);
         std::string operation(server &m_server, websocketpp::connection_hdl &hdl, std::string input);
         User *user1, *user2;
 };

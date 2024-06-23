@@ -6,7 +6,8 @@
                 "${default}",
                 "${workspaceFolder}/include",
                 "/opt/homebrew/Cellar/websocketpp/0.8.2/include",
-                "/opt/homebrew/Cellar/boost/1.85.0/**"
+                "/opt/homebrew/Cellar/boost/1.85.0/**",
+                "/opt/homebrew/Cellar/mongo-cxx-driver/3.10.1/include"
             ],
             "defines": [],
             "macFrameworkPath": [

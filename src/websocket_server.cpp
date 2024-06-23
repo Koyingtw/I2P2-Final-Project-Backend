@@ -40,7 +40,7 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
     std::string message = msg->get_payload();
     std::cout << "Received message: " << message << std::endl;
 
-    if (message == "in queue") {
+    if (message == "pvp") {
         m_server.send(hdl, "You are in queue", websocketpp::frame::opcode::text);
         m_game_queue.push(m_server, hdl);
     }
@@ -64,11 +64,15 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
             m_game_queue.removeGame(hdl2);
         }
     }
+    else if (message[0] == '2' && m_game_queue.isInGame(hdl)) {
+        Game *game = m_game_queue.getGame(hdl);
+        game->hold(m_server, hdl);
+    }
     else if (message == "pve") {
         m_server.send(hdl, "PVE Mode", websocketpp::frame::opcode::text);
         m_game_queue.pve(m_server, hdl);
     }
-    else if (message[0] == '2' && m_game_queue.isInPve(hdl)) {
+    else if (message[0] == '3' && m_game_queue.isInPve(hdl)) {
         Pve *PVE = m_game_queue.getPve(hdl);
         std::cout << "PVE" << std::endl;
         std::string ret = PVE->operation(m_server, hdl, message);
@@ -77,7 +81,7 @@ void WebSocketServer::on_message(websocketpp::connection_hdl hdl, server::messag
             m_game_queue.removePve(hdl);
         }
     }
-    else if (message[0] == '3' && m_game_queue.isInPve(hdl)) {
+    else if (message[0] == '4' && m_game_queue.isInPve(hdl)) {
         Pve *PVE = m_game_queue.getPve(hdl);
         PVE->hold(m_server, hdl);
     }

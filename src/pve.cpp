@@ -76,7 +76,6 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
         dropRow = i;
     }
 
-    std::cout << "dropRow: " << dropRow << std::endl;
 
     if (dropRow == -1) {
         m_server.send(user1->hdl, "Game over", websocketpp::frame::opcode::text);
@@ -89,7 +88,7 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
     ai->score -= clearRows * 100;
 
     // 印出盤面
-    std::cout << "user: " << user << std::endl;
+    // std::cout << "user: " << user << std::endl;
     // printMatrix(user->board);
 
     user->block = stringToMatrix(generateBlockString(user->nextBlock[0]));
