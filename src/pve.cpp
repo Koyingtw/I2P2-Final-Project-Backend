@@ -69,7 +69,7 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
     }
 
     int dropRow = -1;
-    for (int i = 0; i <= BOARD_HEIGHT; ++i) {
+    for (int i = 0; i < BOARD_HEIGHT; ++i) {
         if (!canPlaceBlock(user->board, user->block, i, 0)) {
             break;
         }
@@ -78,7 +78,7 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
 
 
     if (dropRow == -1) {
-        m_server.send(user1->hdl, "Game over", websocketpp::frame::opcode::text);
+        m_server.send(user1->hdl, "game-over", websocketpp::frame::opcode::text);
         return "Game Over";
     }
 
@@ -139,13 +139,14 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
     }
 
     if (dropRow == -1) {
-        m_server.send(user1->hdl, "Game over", websocketpp::frame::opcode::text);
+        m_server.send(user1->hdl, "you-win", websocketpp::frame::opcode::text);
         return "Game Over";
     }
 
 
     // 將方塊放置在盤面上
     clearRows = placeBlock(ai->board, ai->block, dropRow, 0);
+    std::cout << "clearRows: " << clearRows << std::endl;
     ai->score += clearRows * 100;
     user1->score -= clearRows * 100;
 

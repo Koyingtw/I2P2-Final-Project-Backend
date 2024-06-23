@@ -3,7 +3,7 @@
 #include <random>
 #include "matrix.hpp"
 #include "constants.hpp"
-
+#include <algorithm>
 typedef std::vector<std::vector<char>> Matrix;
 
 Matrix stringToMatrix(std::string str) {
@@ -63,25 +63,27 @@ int placeBlock(std::vector<std::vector<char>>& board, const std::vector<std::vec
     }
 
     int clearRow = 0;
-    for (int i = BLOCK_HEIGHT - 1; ~i; i--) {
-        bool clear = true;
-        for (int j = 0; j < WIDTH; j++) {
-            if (board[startRow + i][j] == 'X') {
-                clear = false;
-                break;
+    std::cout << "printMatrix\n";
+    printMatrix(board);
+    for (int i = 0; i < BOARD_HEIGHT; ++i) {
+        bool full = true;
+        for (int j = 0; j < WIDTH; ++j) {
+            if (board[i][j] == 'X') {
+                full = false;
+                break;  
             }
         }
-        if (clear) {
+        if (full) {
             clearRow++;
-            for (int j = i; j; j--) {
-                for (int k = 0; k < WIDTH; k++) {
-                    board[startRow + j][k] = board[startRow + j - 1][k];
+            std::cout << "clearRow! " << clearRow << std::endl;
+            for (int k = i; k > 0; --k) {
+                for (int j = 0; j < WIDTH; ++j) {
+                    board[k][j] = board[k - 1][j];
                 }
             }
-            for (int j = 0; j < WIDTH; j++) {
-                board[startRow][j] = 'X';
+            for (int j = 0; j < WIDTH; ++j) {
+                board[0][j] = 'X';
             }
-            i++;
         }
     }
     return clearRow;

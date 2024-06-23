@@ -97,8 +97,8 @@ std::string Game::operation(server &m_server, websocketpp::connection_hdl &hdl, 
     }
 
     if (dropRow == -1) {
-        m_server.send(user->hdl, "Game over", websocketpp::frame::opcode::text);
-        m_server.send(enemy->hdl, "You win", websocketpp::frame::opcode::text);
+        m_server.send(user->hdl, "game-over", websocketpp::frame::opcode::text);
+        m_server.send(enemy->hdl, "you-win", websocketpp::frame::opcode::text);
         return "Game Over";
     }
 
