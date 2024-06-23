@@ -161,5 +161,12 @@ std::string Game::operation(server &m_server, websocketpp::connection_hdl &hdl, 
     ret += "my-score " + std::to_string(user->score) + '\n';
     ret += "enemy-score " + std::to_string(enemy->score) + '\n';
     m_server.send(enemy->hdl, ret, websocketpp::frame::opcode::text);
+
+    if (user->score <= -500) {
+        m_server.send(user->hdl, "you-lose", websocketpp::frame::opcode::text);
+        m_server.send(enemy->hdl, "game-over", websocketpp::frame::opcode::text);
+        return "Game Over";
+    }
+
     return "OK";
 }

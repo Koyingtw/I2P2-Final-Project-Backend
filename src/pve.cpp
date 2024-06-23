@@ -178,5 +178,10 @@ std::string Pve::operation(server &m_server, websocketpp::connection_hdl &hdl, s
 
     m_server.send(user1->hdl, retAI, websocketpp::frame::opcode::text);
 
+    if (user->score <= -500) {
+        m_server.send(user1->hdl, "game-over", websocketpp::frame::opcode::text);
+        return "Game Over";
+    }
+
     return ret;
 }
